@@ -20,6 +20,8 @@ public class DB {
 		if (rS != null ) {
 		    closeResultSet(rS);
 		}
+		
+		closeConnection();
 	}
 	
 	public static void closeAll(Statement sT, ResultSet rS, boolean CloseConnection) {
