@@ -24,6 +24,14 @@ public class Program {
 	    	System.out.println(seller);
 		}
 	    
+	    System.out.println("==seller findAll==");
+		
+		sel2  = sellerdao.findAll();
+		
+	    for (Seller seller : sel2) {
+	    	System.out.println(seller);
+		}
+	    
 		System.out.println(";))");
 		
 	}
