@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import db.DB;
 import db.DbException;
@@ -42,7 +45,7 @@ public class SellerDaoJDBC implements SellerDao {
 	public Seller findById(Integer id) {
 		PreparedStatement pS = null;
 		ResultSet rS = null;
-		
+		Seller result = null;
 
 		try {
 			pS =  conn.prepareStatement("select seller.*, department.Name as DepName " +
@@ -56,15 +59,16 @@ public class SellerDaoJDBC implements SellerDao {
 			if (rS.next()) {  // testa se exist vendedor na lista
 				Department dep = instantiateDepartment(rS);
 				Seller obj = instantiateSeller(rS, dep);
-				return obj;
+				result = obj;
 			}else {
-				return null;
+				result = null;
 			}
 			
+			return result;
 		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		} finally {
-			DB.closeAll(pS, rS);
+			DB.closeAll(pS, rS, false);
 		}
 	}
 
@@ -90,6 +94,45 @@ public class SellerDaoJDBC implements SellerDao {
 	public List<Seller> findAll(Seller obj) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List <Seller> findByDepartment(Department department) {
+		PreparedStatement pS = null;
+		ResultSet rS = null;
+
+		try {
+			pS =  conn.prepareStatement("select seller.*, department.Name as DepName " +
+										"from seller inner join department " +
+										"on seller.DepartmentId = department.Id " +
+										"where DepartmentId = ? "+
+										"order by name");
+			
+			pS.setInt(1, department.getId());
+			rS= pS.executeQuery();
+			
+			List <Seller> list = new ArrayList<>();
+			Map <Integer, Department> map = new HashMap<>();
+		
+			while (rS.next()) {  // testa se exist departamento na lista
+				
+				Department dep = map.get(rS.getInt("DepartmentId"));
+				
+				if (dep==null) {
+				    dep = instantiateDepartment(rS);
+				    map.put(rS.getInt("DepartmentId"), dep);
+				}
+				
+				Seller obj = instantiateSeller(rS, dep);
+				list.add(obj);
+			}
+			
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeAll(pS, rS, false);
+		}
 	}
 	
 

@@ -21,6 +21,8 @@ public class DB {
 		    closeResultSet(rS);
 		}
 		
+		System.out.println("PAssei por aqui");
+		
 		closeConnection();
 	}
 	
@@ -31,9 +33,14 @@ public class DB {
 		if (rS != null ) {
 		    closeResultSet(rS);
 		}
+		
 		if (CloseConnection) {
 			closeConnection();
+			System.out.println("FEchei coneccao");
+		}else {
+			System.out.println("Coneccao Aberta");
 		}
+			
 	}
 
 	public static Connection getConnection() {
